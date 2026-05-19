@@ -1131,8 +1131,15 @@
       border: 1px solid #DDDDDD; border-radius: 4px;
       background: #fff; color: #1C1C1C; cursor: pointer; outline: none;
     }
-    .tov-export-btn {
+    .tov-register-btn {
       margin-left: auto; height: 30px; padding: 0 14px;
+      background: #028465; color: #fff; border: none;
+      border-radius: 4px; font-size: 12px; font-weight: 600;
+      font-family: Helvetica, sans-serif; cursor: pointer;
+    }
+    .tov-register-btn:hover { opacity: 0.88; }
+    .tov-export-btn {
+      height: 30px; padding: 0 14px;
       background: #4573D2; color: #fff; border: none;
       border-radius: 4px; font-size: 12px; font-weight: 600;
       font-family: Helvetica, sans-serif; cursor: pointer;
@@ -3563,6 +3570,7 @@
         <select class="tov-select" id="tovClient" onchange="tovRender()">
           <option value="" data-i18n="tov.allClients">All clients</option>
         </select>
+        <button class="tov-register-btn" onclick="trOpen()">Registrer tid</button>
         <button class="tov-export-btn" data-i18n="tov.export">Export</button>
       </div>
       <div class="tov-body">
@@ -7635,6 +7643,78 @@
     body._expanded[clientName] = !wasOpen;
     tovRender();
   }
+
+  // ── Register Time Modal ──
+  const _trTasksByClient = {
+    'Novo Nordisk A/S': ['Årsregnskab 2025 – gennemgang', 'Bogføring april', 'Momsafregning Q1'],
+    'Mærsk A/S':        ['Lønkørsel maj', 'Bogføring april', 'Årsrapport – udkast'],
+    'Ørsted A/S':       ['Momsafregning Q1', 'Årsregnskab 2025'],
+    'DSB A/S':          ['Selskabsskat Q1', 'Bogføring marts'],
+  };
+
+  function trOpen() {
+    const overlay = document.getElementById('trOverlay');
+    overlay.classList.add('open');
+    const today = new Date();
+    const yyyy  = today.getFullYear();
+    const mm    = String(today.getMonth() + 1).padStart(2, '0');
+    const dd    = String(today.getDate()).padStart(2, '0');
+    document.getElementById('trDate').value    = `${yyyy}-${mm}-${dd}`;
+    document.getElementById('trClient').value  = '';
+    document.getElementById('trTask').innerHTML = '<option value="">Vælg opgave…</option>';
+    document.getElementById('trSubtask').value  = '';
+    document.getElementById('trStart').value    = '';
+    document.getElementById('trEnd').value      = '';
+    document.getElementById('trMinutes').value  = '';
+    document.getElementById('trError').textContent = '';
+  }
+
+  function trClose() {
+    document.getElementById('trOverlay').classList.remove('open');
+  }
+
+  function trPopulateTasks() {
+    const client = document.getElementById('trClient').value;
+    const sel    = document.getElementById('trTask');
+    const tasks  = _trTasksByClient[client] || [];
+    sel.innerHTML = '<option value="">Vælg opgave…</option>' +
+      tasks.map(tk => `<option value="${tk}">${tk}</option>`).join('');
+  }
+
+  function trAutoCalc() {
+    const start = document.getElementById('trStart').value;
+    const end   = document.getElementById('trEnd').value;
+    if (!start || !end) return;
+    const [sh, sm] = start.split(':').map(Number);
+    const [eh, em] = end.split(':').map(Number);
+    const totalMin = (eh * 60 + em) - (sh * 60 + sm);
+    if (totalMin <= 0) return;
+    document.getElementById('trMinutes').value = +(totalMin / 60).toFixed(2);
+  }
+
+  function trSave() {
+    const dateVal    = document.getElementById('trDate').value;
+    const client     = document.getElementById('trClient').value;
+    const task       = document.getElementById('trTask').value;
+    const minutesVal = document.getElementById('trMinutes').value;
+    const errEl      = document.getElementById('trError');
+
+    if (!dateVal || !client || !task || !minutesVal) {
+      errEl.textContent = 'Udfyld venligst alle påkrævede felter.';
+      return;
+    }
+    const decimalHours = parseFloat(minutesVal.replace(',', '.'));
+    if (isNaN(decimalHours) || decimalHours <= 0) {
+      errEl.textContent = 'Angiv en gyldig tid (f.eks. 1.5 = 1 time og 30 minutter).';
+      return;
+    }
+    const minutes = Math.round(decimalHours * 60);
+    const d = new Date(dateVal + 'T00:00:00');
+    const dateDisplay = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0');
+    _tovSeed.unshift({ client, date: dateDisplay, employee: 'Emma Lykke', ei: 'EL', task, minutes });
+    trClose();
+    tovRender();
+  }
 </script>
 
 <!-- ══ CREATE TASK MODAL ══ -->
@@ -8115,6 +8195,86 @@
     <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
   <span id="coToastMsg">Opgaven blev oprettet</span>
+</div>
+
+<!-- ══ REGISTER TIME MODAL ══ -->
+<div class="ct-overlay" id="trOverlay" onclick="if(event.target===this)trClose()">
+  <div class="ct-modal" role="dialog" aria-modal="true" style="min-width:560px;max-width:600px;">
+
+    <div class="ct-header">
+      <span class="ct-title">Registrer tid</span>
+      <button class="ct-close" onclick="trClose()" aria-label="Luk">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"/></svg>
+      </button>
+    </div>
+
+    <div class="ct-body">
+
+      <!-- Date + Customer -->
+      <div class="ct-row">
+        <div class="ct-field">
+          <label class="ct-label">Dato <span class="req">*</span></label>
+          <input type="date" id="trDate" class="ct-input">
+        </div>
+        <div class="ct-field">
+          <label class="ct-label">Kunde <span class="req">*</span></label>
+          <select id="trClient" class="ct-select" onchange="trPopulateTasks()">
+            <option value="">Vælg kunde…</option>
+            <option>Novo Nordisk A/S</option>
+            <option>Mærsk A/S</option>
+            <option>Ørsted A/S</option>
+            <option>DSB A/S</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Task + Subtask -->
+      <div class="ct-row">
+        <div class="ct-field">
+          <label class="ct-label">Opgave <span class="req">*</span></label>
+          <select id="trTask" class="ct-select">
+            <option value="">Vælg opgave…</option>
+          </select>
+        </div>
+        <div class="ct-field">
+          <label class="ct-label">Delopgave</label>
+          <input type="text" id="trSubtask" class="ct-input" placeholder="Valgfri">
+        </div>
+      </div>
+
+      <!-- Start + End time -->
+      <div class="ct-row">
+        <div class="ct-field">
+          <label class="ct-label">Starttid</label>
+          <input type="time" id="trStart" class="ct-input" oninput="trAutoCalc()">
+        </div>
+        <div class="ct-field">
+          <label class="ct-label">Sluttid</label>
+          <input type="time" id="trEnd" class="ct-input" oninput="trAutoCalc()">
+        </div>
+      </div>
+
+      <!-- Manual time input -->
+      <div class="ct-row">
+        <div class="ct-field">
+          <label class="ct-label">Tid (timer) <span class="req">*</span></label>
+          <input type="number" id="trMinutes" class="ct-input" placeholder="f.eks. 1.5 = 1t 30m" step="0.25" min="0.25">
+        </div>
+        <div class="ct-field" style="justify-content:flex-end; padding-top:20px;">
+          <span style="font-size:12px; color:#767676;">Udfyld start- og sluttid for automatisk beregning, eller indtast tid manuelt.</span>
+        </div>
+      </div>
+
+      <div id="trError" style="font-size:12px; color:#CE3F42; min-height:16px;"></div>
+
+    </div>
+
+    <div class="ct-footer">
+      <button class="ct-btn-cancel" onclick="trClose()">Afbryd</button>
+      <button class="ct-btn-create" onclick="trSave()">Gem</button>
+    </div>
+
+  </div>
 </div>
 
 </body>
