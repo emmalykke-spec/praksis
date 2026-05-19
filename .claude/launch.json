@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ecoPraksis Prototype Server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["claude_server.js"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "Praksis Interview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4200"],
+      "port": 4200
+    }
+  ]
+}

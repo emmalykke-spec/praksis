@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Praksis – Interviewguide</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:    #CE3F42;
+      --blue:   #4573D2;
+      --green:  #028465;
+      --bg:     #FFFFFF;
+      --border: #DDDDDD;
+      --radius: 4px;
+      --dark:   #0F1623;
+      --mid:    #F4F5F7;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      background: var(--dark);
+      color: #222;
+      min-height: 100vh;
+    }
+
+    /* ─── TOP NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      background: rgba(15,22,35,0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 52px;
+    }
+
+    .nav-brand {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.3px;
+    }
+    .nav-brand span { color: var(--blue); }
+
+    .nav-steps {
+      display: flex;
+      gap: 4px;
+    }
+    .nav-step {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+      background: none;
+      font-family: Helvetica, Arial, sans-serif;
+      white-space: nowrap;
+    }
+    .nav-step:hover { color: rgba(255,255,255,0.7); }
+    .nav-step.active {
+      background: rgba(69,115,210,0.2);
+      color: #7BA8F5;
+    }
+
+    .nav-meta {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+    }
+
+    /* ─── PAGE LAYOUT ─── */
+    .page {
+      display: none;
+      min-height: 100vh;
+      padding-top: 52px;
+      align-items: center;
+      justify-content: center;
+      animation: pageIn 0.3s ease;
+    }
+    .page.visible { display: flex; }
+
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── CARD ─── */
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      width: 860px;
+      max-width: calc(100vw - 32px);
+      margin: 24px auto;
+      overflow: hidden;
+      box-shadow: 0 32px 100px rgba(0,0,0,0.5);
+    }
+
+    .card-header {
+      padding: 36px 48px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .badge-pain   { background: #FCEAEA; color: var(--red); }
+    .badge-mvp    { background: #E4F4EE; color: var(--green); }
+    .badge-road   { background: #EEF3FC; color: var(--blue); }
+    .badge-price  { background: #E4F4EE; color: var(--green); }
+    .badge-recap  { background: #F4F5F7; color: #666; }
+    .badge-intro  { background: #EEF3FC; color: var(--blue); }
+
+    .card-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #111;
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+    .card-header p {
+      font-size: 15px;
+      color: #666;
+      line-height: 1.6;
+      max-width: 560px;
+    }
+
+    .card-body {
+      padding: 32px 48px 40px;
+    }
+
+    /* ─── QUESTION BLOCKS ─── */
+    .q-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .q-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 16px 18px;
+      border-radius: var(--radius);
+      background: var(--mid);
+      border: 1px solid var(--border);
+    }
+    .q-item .q-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .q-icon-red   { background: #FCEAEA; color: var(--red); }
+    .q-icon-blue  { background: #EEF3FC; color: var(--blue); }
+    .q-icon-green { background: #E4F4EE; color: var(--green); }
+    .q-icon-gold  { background: #FFF8E6; color: #9A6F00; }
+
+    .q-item .q-text {
+      font-size: 15px;
+      color: #222;
+      line-height: 1.55;
+      flex: 1;
+    }
+    .q-item .q-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #999;
+      margin-bottom: 3px;
+    }
+
+    /* ─── SCORE ─── */
+    .score-block {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #FAFAFA;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .score-block .s-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #888;
+      white-space: nowrap;
+    }
+    .score-dots {
+      display: flex;
+      gap: 8px;
+    }
+    .score-dot {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 2px solid #DDD;
+      background: #FFF;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      color: #CCC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .score-dot:hover { border-color: var(--blue); color: var(--blue); }
+    .score-dot.on { background: var(--blue); border-color: var(--blue); color: #FFF; }
+
+    /* ─── NOTES ─── */
+    .notes-block { margin-top: 20px; }
+    .notes-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #AAA;
+      margin-bottom: 8px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 72px;
+      border: 1px solid #DDD;
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      resize: vertical;
+      outline: none;
+      background: #FAFAFA;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    textarea:focus { border-color: var(--blue); background: #FFF; }
+    textarea::placeholder { color: #CCC; }
+
+    /* ─── MVP FEATURE LIST ─── */
+    .feature-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .feature-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      background: var(--mid);
+    }
+    .feature-box h3 {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: #888;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .feature-box h3 .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+    .feature-box ul { list-style: none; }
+    .feature-box ul li {
+      font-size: 14px;
+      color: #333;
+      padding: 6px 0;
+      border-bottom: 1px solid #EBEBEB;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feature-box ul li:last-child { border-bottom: none; }
+    .feature-box ul li::before {
+      content: "✓";
+      font-size: 11px;
+      color: var(--green);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ─── ROAD MAP ─── */
+    .road-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 14px;
+    }
+    .road-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+    }
+    .road-box h3 {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    .road-box ul { list-style: none; }
+    .road-box ul li {
+      font-size: 13px;
+      color: #555;
+      padding: 5px 0;
+      border-bottom: 1px solid #F0F0F0;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .road-box ul li:last-child { border-bottom: none; }
+    .road-box ul li::before {
+      content: "→";
+      font-size: 11px;
+      color: var(--blue);
+      flex-shrink: 0;
+    }
+
+    /* ─── PRICING MODEL CARDS ─── */
+    .model-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .model-card {
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 28px 24px 24px;
+      background: #FFF;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .model-card:hover {
+      border-color: var(--green);
+      box-shadow: 0 4px 20px rgba(2,132,101,0.1);
+    }
+    .model-card-b:hover {
+      border-color: var(--blue);
+      box-shadow: 0 4px 20px rgba(69,115,210,0.12);
+    }
+
+    .model-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #AAA;
+      margin-bottom: 14px;
+    }
+
+    .model-formula {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .formula-base {
+      font-size: 32px;
+      font-weight: 700;
+      color: #111;
+      line-height: 1;
+    }
+    .formula-op {
+      font-size: 22px;
+      color: #CCC;
+      font-weight: 300;
+    }
+    .formula-var {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--green);
+      line-height: 1;
+    }
+    .model-card-b .formula-var { color: var(--blue); }
+    .formula-var small {
+      font-size: 13px;
+      font-weight: 400;
+      color: #999;
+      margin-left: 1px;
+    }
+
+    .model-sub {
+      font-size: 12px;
+      color: #AAA;
+      margin-bottom: 20px;
+    }
+
+    .model-examples {
+      border-top: 1px solid #EEEEEE;
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .ex-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 4px;
+    }
+    .ex-row.ex-hi {
+      background: #F4F9FF;
+    }
+    .model-card-b .ex-row.ex-hi { background: #F0F7FF; }
+    .ex-n { font-size: 13px; color: #666; }
+    .ex-price { font-size: 14px; font-weight: 700; color: #222; }
+    .ex-row.ex-hi .ex-n  { color: var(--blue); font-weight: 600; }
+    .ex-row.ex-hi .ex-price { color: var(--blue); }
+
+    /* ─── CALCULATOR ─── */
+    .calc-box {
+      background: var(--mid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 8px;
+    }
+    .calc-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #888;
+      margin-bottom: 12px;
+    }
+    .calc-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .calc-text { font-size: 14px; color: #555; white-space: nowrap; }
+    .calc-row input[type=number] {
+      width: 100px;
+      border: 1px solid #DDD;
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      outline: none;
+      background: #FFF;
+      transition: border-color 0.15s;
+      -moz-appearance: textfield;
+    }
+    .calc-row input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .calc-row input[type=number]:focus { border-color: var(--blue); }
+    .calc-result {
+      flex: 1;
+      padding: 9px 14px;
+      border-radius: var(--radius);
+      background: #E4F4EE;
+      color: var(--green);
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      min-width: 130px;
+    }
+    .calc-result-b {
+      background: #EEF3FC;
+      color: var(--blue);
+    }
+    .calc-legends {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      padding-left: 128px;
+    }
+    .leg-a, .leg-b {
+      flex: 1;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      text-align: center;
+      min-width: 130px;
+    }
+    .leg-a { color: var(--green); }
+    .leg-b { color: var(--blue); }
+
+    .wtp-questions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+
+    /* ─── SENSITIVITY ─── */
+    .sens-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+    .sens-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--mid);
+    }
+    .sens-row .sens-q {
+      flex: 1;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.4;
+    }
+    .sens-row input[type=text] {
+      width: 130px;
+      border: 1px solid #DDD;
+      border-radius: var(--radius);
+      padding: 8px 12px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      outline: none;
+      background: #FFF;
+      transition: border-color 0.15s;
+      min-height: unset;
+    }
+    .sens-row input:focus { border-color: var(--blue); }
+    .sens-row input::placeholder { color: #CCC; }
+
+    /* ─── SIGNAL BUTTONS ─── */
+    .signal-row {
+      display: flex;
+      gap: 10px;
+    }
+    .sig-btn {
+      flex: 1;
+      padding: 13px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      background: #FFF;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #999;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .sig-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .sig-btn.low    { background: #FCEAEA; border-color: var(--red);   color: var(--red);   }
+    .sig-btn.med    { background: #FFF8E6; border-color: #C89200;      color: #9A6F00;      }
+    .sig-btn.high   { background: #E4F4EE; border-color: var(--green); color: var(--green); }
+
+    /* ─── SUMMARY TEMPLATE ─── */
+    .summary-tpl {
+      background: #F4F9FF;
+      border: 1px solid #C5D8F8;
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      font-size: 15px;
+      color: #444;
+      line-height: 1.8;
+      margin: 20px 0;
+    }
+    .summary-tpl .fill {
+      background: #ddeafb;
+      color: var(--blue);
+      border-radius: 3px;
+      padding: 1px 6px;
+      font-weight: 600;
+    }
+
+    /* ─── SECTION DIVIDER ─── */
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    /* ─── TITLE SLIDE ─── */
+    .title-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 40px;
+    }
+    .title-page .eco-logo {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+    .title-page h1 {
+      font-size: 48px;
+      font-weight: 700;
+      color: #FFF;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .title-page h1 em { color: var(--blue); font-style: normal; }
+    .title-page p {
+      font-size: 17px;
+      color: rgba(255,255,255,0.5);
+      max-width: 440px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    .meta-grid {
+      display: flex;
+      gap: 32px;
+      margin-bottom: 48px;
+    }
+    .meta-field {
+      text-align: left;
+    }
+    .meta-field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 6px;
+    }
+    .meta-field input {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #FFF;
+      outline: none;
+      width: 180px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .meta-field input:focus { border-color: var(--blue); background: rgba(255,255,255,0.1); }
+    .meta-field input::placeholder { color: rgba(255,255,255,0.25); }
+
+    .start-btn {
+      background: var(--blue);
+      color: #FFF;
+      border: none;
+      border-radius: var(--radius);
+      padding: 14px 36px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .start-btn:hover { background: #3560BA; }
+
+    /* ─── BOTTOM NAV ─── */
+    .bottom-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: #F9F9F9;
+      border-top: 1px solid #EEE;
+    }
+    .b-btn {
+      padding: 9px 22px;
+      border-radius: var(--radius);
+      border: none;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .b-prev {
+      background: transparent;
+      color: #999;
+      border: 1px solid #DDD;
+    }
+    .b-prev:hover { color: #333; border-color: #AAA; }
+    .b-next {
+      background: var(--blue);
+      color: #FFF;
+    }
+    .b-next:hover { background: #3560BA; }
+    .b-pos {
+      font-size: 12px;
+      color: #AAA;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 700px) {
+      .feature-cols, .model-grid, .road-grid { grid-template-columns: 1fr; }
+      .card-header, .card-body, .bottom-nav { padding-left: 24px; padding-right: 24px; }
+      nav { padding: 0 16px; }
+      .nav-steps { display: none; }
+      .title-page h1 { font-size: 32px; }
+      .meta-grid { flex-direction: column; gap: 12px; }
+      .alt-models { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav>
+  <div class="nav-brand">e-conomic <span>Praksis</span></div>
+  <div class="nav-steps">
+    <button class="nav-step active" onclick="goto(0)">Intro</button>
+    <button class="nav-step" onclick="goto(1)">1 · Problem</button>
+    <button class="nav-step" onclick="goto(2)">2 · Løsning</button>
+    <button class="nav-step" onclick="goto(3)">3 · Roadmap</button>
+    <button class="nav-step" onclick="goto(4)">4 · Prissætning</button>
+    <button class="nav-step" onclick="goto(5)">5 · Opsamling</button>
+  </div>
+  <div class="nav-meta" id="nav-meta">Side 1 / 6</div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PAGE 0: TITEL -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page visible" id="page-0">
+  <div class="title-page">
+    <div class="eco-logo">e-conomic · Praksis</div>
+    <h1>Opgavestyring<br>til <em>revisorer</em></h1>
+    <p>Co-design interview om værdi og betalingsvillighed for et nyt opgavestyringssystem.</p>
+
+    <div class="meta-grid">
+      <div class="meta-field">
+        <label>Dato</label>
+        <input type="text" id="meta-dato" placeholder="DD/MM/ÅÅÅÅ" />
+      </div>
+      <div class="meta-field">
+        <label>Kunde</label>
+        <input type="text" id="meta-kunde" placeholder="Navn på kontor" />
+      </div>
+      <div class="meta-field">
+        <label>Deltager(e)</label>
+        <input type="text" id="meta-deltagere" placeholder="Navne" />
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="goto(1)">Start interview →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PAGE 1: PROBLEM -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page" id="page-1">
+  <div class="card">
+    <div class="card-header">
+      <div class="section-badge badge-pain">1 · Problem & Nuværende Situation</div>
+      <h1>Hvordan ser hverdagen ud i dag?</h1>
+      <p>Vi starter med at forstå de udfordringer, I møder i jeres nuværende proces – inden vi viser løsningen.</p>
+    </div>
+    <div class="card-body">
+      <div class="q-list">
+        <div class="q-item">
+          <div class="q-icon q-icon-red">?</div>
+          <div>
+            <div class="q-label">Udfordring</div>
+            <div class="q-text">Oplever I opgavestyring som en udfordring i dag?</div>
+          </div>
+        </div>
+        <div class="q-item">
+          <div class="q-icon q-icon-red">?</div>
+          <div>
+            <div class="q-label">Fejlkilder</div>
+            <div class="q-text">Hvornår går det typisk galt i jeres nuværende proces?</div>
+          </div>
+        </div>
+        <div class="q-item">
+          <div class="q-icon q-icon-red">⏱</div>
+          <div>
+            <div class="q-label">Tidsforbrug</div>
+            <div class="q-text">Hvor meget tid bruger I på manuel opgavestyring i dag – fx pr. uge eller pr. kunde?</div>
+          </div>
+        </div>
+        <div class="q-item">
+          <div class="q-icon q-icon-red">!</div>
+          <div>
+            <div class="q-label">Konsekvens</div>
+            <div class="q-text">Hvad er konsekvensen for forretningen, hvis opgavestyringen ikke fungerer optimalt?</div>
+          </div>
+        </div>
+        <div class="q-item">
+          <div class="q-icon q-icon-red">↩</div>
+          <div>
+            <div class="q-label">Alternativ</div>
+            <div class="q-text">Hvis I slet ikke havde et dedikeret værktøj – hvad ville I så gøre i stedet?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="score-block" style="margin-top:24px;">
+        <div class="s-label">Score · Problemets omfang</div>
+        <div class="score-dots" id="sd-pain">
+          <div class="score-dot" onclick="dot('sd-pain',1)">1</div>
+          <div class="score-dot" onclick="dot('sd-pain',2)">2</div>
+          <div class="score-dot" onclick="dot('sd-pain',3)">3</div>
+          <div class="score-dot" onclick="dot('sd-pain',4)">4</div>
+          <div class="score-dot" onclick="dot('sd-pain',5)">5</div>
+        </div>
+        <span style="font-size:12px;color:#CCC;">5 = meget kritisk</span>
+      </div>
+
+      <div class="notes-block" style="margin-top:16px;">
+        <div class="notes-label">Noter</div>
+        <textarea placeholder="Tidsforbrug, konsekvenser, nuværende workflow..."></textarea>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <button class="b-btn b-prev" onclick="goto(0)">← Tilbage</button>
+      <span class="b-pos">Side 2 / 6</span>
+      <button class="b-btn b-next" onclick="goto(2)">Næste: Løsningen →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PAGE 2: MVP -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page" id="page-2">
+  <div class="card">
+    <div class="card-header">
+      <div class="section-badge badge-mvp">2 · Præsentation af Løsning</div>
+      <h1>Hvad er med fra start (MVP)?</h1>
+      <p>Fokus er på at skabe <strong>struktur og overblik</strong> fra dag ét – bygget oven på jeres eksisterende e-conomic opsætning.</p>
+    </div>
+    <div class="card-body">
+      <div class="feature-cols">
+        <div class="feature-box">
+          <h3><span class="dot"></span>Opgavestyring</h3>
+          <ul>
+            <li>Task Builder – byg flows og processer</li>
+            <li>Opgavetyper (tilpas til jeres setup)</li>
+            <li>Gentagende opgaver</li>
+          </ul>
+        </div>
+        <div class="feature-box">
+          <h3><span class="dot"></span>Overblik</h3>
+          <ul>
+            <li>Checkliste-overblik pr. kunde</li>
+            <li>Kunde-/virksomhedsoverblik</li>
+            <li>Team-side</li>
+          </ul>
+        </div>
+      </div>
+      <div class="feature-box">
+        <h3><span class="dot"></span>Data & Setup</h3>
+        <ul>
+          <li>Synkronisering af kundedata</li>
+          <li>Bygget oven på eksisterende admin-setup</li>
+        </ul>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="q-list">
+        <div class="q-item">
+          <div class="q-icon q-icon-green">?</div>
+          <div>
+            <div class="q-label">Feedback på scope</div>
+            <div class="q-text">Hvordan ville dette fungere for jer som en start?</div>
+          </div>
+        </div>
+        <div class="q-item">
+          <div class="q-icon q-icon-green">+</div>
+          <div>
+            <div class="q-label">Mangler</div>
+            <div class="q-text">Hvad mangler der for, at det bliver rigtig værdifuldt for jer her og nu?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes-block" style="margin-top:16px;">
+        <div class="notes-label">Reaktion & noter</div>
+        <textarea placeholder="Hvad lyser de op for? Hvad savner de?"></textarea>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <button class="b-btn b-prev" onclick="goto(1)">← Tilbage</button>
+      <span class="b-pos">Side 3 / 6</span>
+      <button class="b-btn b-next" onclick="goto(3)">Næste: Roadmap →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PAGE 3: ROADMAP -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page" id="page-3">
+  <div class="card">
+    <div class="card-header">
+      <div class="section-badge badge-road">3 · Fremtidigt Roadmap</div>
+      <h1>Det vi bygger bagefter</h1>
+      <p>Fokus skifter til <strong>effektivisering og automation</strong> – hvad er mest kritisk for jer?</p>
+    </div>
+    <div class="card-body">
+      <div class="road-grid">
+        <div class="road-box">
+          <h3>Effektivisering</h3>
+          <ul>
+            <li>Tidsregistrering</li>
+            <li>Notifikationer & reminders</li>
+            <li>Dokumenthåndtering</li>
+            <li>Fakturering</li>
+          </ul>
+        </div>
+        <div class="road-box">
+          <h3>Automation & Integration</h3>
+          <ul>
+            <li>SKAT-integration</li>
+            <li>Automation af momsdata</li>
+            <li>Integrationer til andre systemer</li>
+          </ul>
+        </div>
+        <div class="road-box">
+          <h3>Avanceret Styring</h3>
+          <ul>
+            <li>Ressourceplanlægning</li>
+            <li>Opgaveafhængigheder</li>
+            <li>Historik & audit logs</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="q-list">
+        <div class="q-item">
+          <div class="q-icon q-icon-blue">★</div>
+          <div>
+            <div class="q-label">Prioritering</div>
+            <div class="q-text">Hvad af det ovenstående er mest kritisk for jeres forretning?</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes-block" style="margin-top:16px;">
+        <div class="notes-label">Prioriteter (markér det vigtigste)</div>
+        <textarea placeholder="Hvad er et must-have vs. nice-to-have for dem?"></textarea>
+      </div>
+    </div>
+    <div class="bottom-nav">
+      <button class="b-btn b-prev" onclick="goto(2)">← Tilbage</button>
+      <span class="b-pos">Side 4 / 6</span>
+      <button class="b-btn b-next" onclick="goto(4)">Næste: Prissætning →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PAGE 4: PRISSÆTNING -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page" id="page-4">
+  <div class="card">
+    <div class="card-header">
+      <div class="section-badge badge-price">4 · Prissætning</div>
+      <h1>Hvad er det værd for jer?</h1>
+      <p>Månedlig abonnementspris baseret på antal kunder – ingen bindingsperiode de første 3 måneder.</p>
+    </div>
+    <div class="card-body">
+
+      <!-- Open WTP question -->
+      <div class="q-list wtp-questions">
+        <div class="q-item">
+          <div class="q-icon q-icon-green">?</div>
+          <div>
+            <div class="q-label">Åbent spørgsmål · Stil dette FØR I viser kortene</div>
+            <div class="q-text">Hvad tænker I umiddelbart, at et system som dette burde koste?</div>
+          </div>
+        </div>
+      </div>
+      <div class="notes-block" style="margin-bottom:28px;">
+        <div class="notes-label">Første prisreaktion</div>
+        <textarea style="min-height:52px;" placeholder="Kundens umiddelbare bud, inden I viser priserne..."></textarea>
+      </div>
+
+      <!-- Pricing packages -->
+      <div class="model-grid">
+
+        <div class="model-card">
+          <div class="model-label">Model A</div>
+          <div class="model-formula">
+            <span class="formula-base">800 kr.</span>
+            <span class="formula-op">+</span>
+            <span class="formula-var">10 kr.<small>/klient</small></span>
+          </div>
+          <div class="model-sub">Grundgebyr pr. måned · derefter pr. klient</div>
+        </div>
+
+        <div class="model-card model-card-b">
+          <div class="model-label">Model B</div>
+          <div class="model-formula">
+            <span class="formula-base">1.000 kr.</span>
+            <span class="formula-op">+</span>
+            <span class="formula-var">20 kr.<small>/klient</small></span>
+          </div>
+          <div class="model-sub">Grundgebyr pr. måned · derefter pr. klient</div>
+        </div>
+
+      </div>
+
+      <!-- Reaction question -->
+      <div class="q-list" style="margin-bottom:20px;margin-top:20px;">
+        <div class="q-item">
+          <div class="q-icon q-icon-green">→</div>
+          <div>
+            <div class="q-label">Opfølgning</div>
+            <div class="q-text">Hvordan føles disse prisniveauer for jer? Hvilken model giver mest mening?</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Price sensitivity -->
+      <div class="section-divider"></div>
+      <p style="font-size:12px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Prisfølsomhed</p>
+      <div class="sens-grid">
+        <div class="sens-row">
+          <div class="sens-q">Ved hvilken pris er det <strong>for dyrt?</strong></div>
+          <input type="text" placeholder="kr./md." />
+        </div>
+        <div class="sens-row">
+          <div class="sens-q">Ved hvilken pris tvivler I på <strong>kvaliteten?</strong></div>
+          <input type="text" placeholder="kr./md." />
+        </div>
+        <div class="sens-row">
+          <div class="sens-q">Ved hvilken pris er det et <strong>rigtig godt køb?</strong></div>
+          <input type="text" placeholder="kr./md." />
+        </div>
+      </div>
+
+      <div class="notes-block" style="margin-top:16px;">
+        <div class="notes-label">Reaktion & noter</div>
+        <textarea placeholder="Forbehold, betingelser for køb, hvad der mangler for at det giver mening..."></textarea>
+      </div>
+
+    </div>
+    <div class="bottom-nav">
+      <button class="b-btn b-prev" onclick="goto(3)">← Tilbage</button>
+      <span class="b-pos">Side 5 / 6</span>
+      <button class="b-btn b-next" onclick="goto(5)">Næste: Opsamling →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- PAGE 5: OPSAMLING -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="page" id="page-5">
+  <div class="card">
+    <div class="card-header">
+      <div class="section-badge badge-recap">5 · Opsamling · Internt brug</div>
+      <h1>Samlet vurdering</h1>
+      <p>Udfyldes efter interviewet er afsluttet.</p>
+    </div>
+    <div class="card-body">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+        <div>
+          <div class="notes-label" style="margin-bottom:10px;">Kunde-signal (interesse/behov)</div>
+          <div class="signal-row">
+            <button class="sig-btn" onclick="sig(this,'low')">Lav</button>
+            <button class="sig-btn" onclick="sig(this,'med')">Medium</button>
+            <button class="sig-btn" onclick="sig(this,'high')">Høj</button>
+          </div>
+        </div>
+        <div>
+          <div class="notes-label" style="margin-bottom:10px;">Samlet potentiale</div>
+          <div class="signal-row">
+            <button class="sig-btn" onclick="sig(this,'low')">Lav</button>
+            <button class="sig-btn" onclick="sig(this,'med')">Medium</button>
+            <button class="sig-btn" onclick="sig(this,'high')">Høj</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="notes-block">
+        <div class="notes-label">Kort begrundelse</div>
+        <textarea placeholder="Hvad driver/begrænser interessen? Hvad sagde de tydeligt?"></textarea>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="notes-label">Hurtig opsamling (1 linje)</div>
+      <div class="summary-tpl">
+        <span class="fill">[Kunde]</span> oplever <span class="fill">[problem]</span>, bruger ca. <span class="fill">[tid]</span>, vurderer værdien som <span class="fill">[score]</span> og er <span class="fill">[villig / ikke villig]</span> til at betale.
+      </div>
+
+      <div class="notes-block">
+        <div class="notes-label">Skriv opsamlingen her</div>
+        <textarea style="min-height:60px;" placeholder="fx: Kontor med 80 kunder oplever kaos i deadlines, bruger ~3t/uge, vurderer værdien som 4/5 og er villig til at betale 1.500-1.750 kr./md."></textarea>
+      </div>
+
+    </div>
+    <div class="bottom-nav">
+      <button class="b-btn b-prev" onclick="goto(4)">← Tilbage</button>
+      <span class="b-pos">Side 6 / 6</span>
+      <button class="b-btn b-next" onclick="goto(0)" style="background:#028465;">↩ Start forfra</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let cur = 0;
+  const total = 6;
+
+  const navSteps = document.querySelectorAll('.nav-step');
+  const pages    = document.querySelectorAll('.page');
+  const meta     = document.getElementById('nav-meta');
+
+  function goto(n) {
+    pages[cur].classList.remove('visible');
+    navSteps[cur].classList.remove('active');
+    cur = Math.max(0, Math.min(n, total - 1));
+    pages[cur].classList.add('visible');
+    navSteps[cur].classList.add('active');
+    meta.textContent = 'Side ' + (cur + 1) + ' / ' + total;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight') goto(cur + 1);
+    if (e.key === 'ArrowLeft')  goto(cur - 1);
+  });
+
+  function dot(id, val) {
+    document.querySelectorAll('#' + id + ' .score-dot').forEach((d, i) => {
+      d.classList.toggle('on', i + 1 === val);
+    });
+  }
+
+  function calcPrice() {
+    const n = parseInt(document.getElementById('calc-input').value, 10);
+    const elA = document.getElementById('calc-a');
+    const elB = document.getElementById('calc-b');
+    if (!n || n < 1) { elA.textContent = '—'; elB.textContent = '—'; return; }
+    const a = 800 + n * 10;
+    const b = 1000 + n * 20;
+    elA.textContent = a.toLocaleString('da-DK') + ' kr./md.';
+    elB.textContent = b.toLocaleString('da-DK') + ' kr./md.';
+  }
+
+  function sig(btn, cls) {
+    const row = btn.closest('.signal-row');
+    row.querySelectorAll('.sig-btn').forEach(b => b.classList.remove('low','med','high'));
+    btn.classList.add(cls);
+  }
+</script>
+</body>
+</html>

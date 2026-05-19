@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node claude_server.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(ps -p 74329 -p 74858 -o pid,command)",
+      "Bash(kill 74858)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(ngrok http:*)",
+      "Bash(curl -s http://localhost:4040/api/tunnels)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(t['public_url']\\) for t in d.get\\('tunnels',[]\\)]\")",
+      "Bash(npm --version)",
+      "Bash(lsof -ti:3000)",
+      "Bash(ngrok --version)",
+      "Bash(python3 -c \"import sys,json; t=json.load\\(sys.stdin\\)['tunnels']; print\\(t[0]['public_url']\\)\")",
+      "Bash(pkill ngrok:*)",
+      "Bash(node --check)",
+      "Bash(pkill -f ngrok)",
+      "Bash(python3 -c \"import sys,json; t=json.load\\(sys.stdin\\)['tunnels']; print\\(t[0]['public_url'] if t else 'not ready'\\)\")",
+      "Bash(python -m markitdown /Users/emmalykke/Downloads/praksis_pitch_deck.pptx)",
+      "Bash(python3 -m markitdown /Users/emmalykke/Downloads/praksis_pitch_deck.pptx)",
+      "Bash(pip3 install:*)",
+      "Bash(python3 -c \"from markitdown import MarkItDown; md = MarkItDown\\(\\); result = md.convert\\('/Users/emmalykke/Downloads/praksis_pitch_deck.pptx'\\); print\\(result.text_content\\)\")",
+      "Bash(python3 -c ':*)",
+      "Bash(ngrok version *)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(t['public_url']\\) for t in d['tunnels']]\")",
+      "Bash(cp \"/Users/emmalykke/Downloads/task overview.png\" \"/Users/emmalykke/Documents/Claude and figma connection/ecoPraksis-prototype/screenshot-task-overview.png\")",
+      "Bash(cp \"/Users/emmalykke/Downloads/opgavetype.png\" \"/Users/emmalykke/Documents/Claude and figma connection/ecoPraksis-prototype/screenshot-opgavetyper.png\")",
+      "mcp__717a7162-8665-4334-98ed-607b7f99bc52__get_screenshot",
+      "mcp__717a7162-8665-4334-98ed-607b7f99bc52__get_design_context",
+      "Bash(node -e ' *)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(git -C \"/Users/emmacathrinelykke/Documents/Claude and figma connection/ecoPraksis-prototype\" status)",
+      "Bash(git init *)",
+      "Bash(git add *)"
+    ]
+  }
+}

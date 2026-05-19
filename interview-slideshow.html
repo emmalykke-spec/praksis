@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interviewguide – Praksis (Value & WTP)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      background: #1a1a2e;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ── Progress bar ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: #4573D2;
+      transition: width 0.3s ease;
+      z-index: 100;
+    }
+
+    /* ── Slide counter ── */
+    #slide-counter {
+      position: fixed;
+      top: 16px; right: 20px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      font-family: Helvetica, Arial, sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Slide wrapper ── */
+    #slides-container {
+      width: 900px;
+      max-width: 96vw;
+      position: relative;
+    }
+
+    .slide {
+      display: none;
+      background: #FFFFFF;
+      border-radius: 8px;
+      padding: 52px 60px;
+      min-height: 520px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+      position: relative;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .slide.active { display: flex; flex-direction: column; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Slide tag / category label ── */
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      width: fit-content;
+    }
+    .tag-intro   { background: #EEF3FC; color: #4573D2; }
+    .tag-mvp     { background: #E6F4F0; color: #028465; }
+    .tag-later   { background: #FEF3F3; color: #CE3F42; }
+    .tag-scope   { background: #FFF8E6; color: #9A6F00; }
+    .tag-pain    { background: #FEF3F3; color: #CE3F42; }
+    .tag-value   { background: #EEF3FC; color: #4573D2; }
+    .tag-wtp     { background: #E6F4F0; color: #028465; }
+    .tag-summary { background: #F4F4F4; color: #555; }
+
+    /* ── Typography ── */
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #111;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 15px;
+      color: #888;
+      font-style: italic;
+      margin-bottom: 28px;
+    }
+    p {
+      font-size: 16px;
+      color: #333;
+      line-height: 1.6;
+    }
+    .lead {
+      font-size: 18px;
+      color: #222;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    /* ── Two-column layout ── */
+    .cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-top: 8px;
+    }
+    .col-box {
+      background: #F8F8F8;
+      border: 1px solid #DDDDDD;
+      border-radius: 4px;
+      padding: 20px 24px;
+    }
+    .col-box h3 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #555;
+      margin-bottom: 12px;
+    }
+    .col-box ul {
+      list-style: none;
+      padding: 0;
+    }
+    .col-box ul li {
+      font-size: 14px;
+      color: #333;
+      padding: 5px 0;
+      border-bottom: 1px solid #EEEEEE;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .col-box ul li:last-child { border-bottom: none; }
+    .col-box ul li::before {
+      content: "●";
+      font-size: 8px;
+      color: #AAAAAA;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+
+    /* ── Question list ── */
+    .questions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 4px;
+    }
+    .question-item {
+      background: #F8F8F8;
+      border-left: 3px solid #4573D2;
+      border-radius: 0 4px 4px 0;
+      padding: 14px 18px;
+      font-size: 16px;
+      color: #222;
+      line-height: 1.5;
+    }
+    .question-item.red   { border-left-color: #CE3F42; }
+    .question-item.green { border-left-color: #028465; }
+    .question-item.gold  { border-left-color: #C89200; }
+
+    /* ── Score widget ── */
+    .score-section {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #DDDDDD;
+    }
+    .score-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #888;
+      margin-bottom: 12px;
+    }
+    .score-dots {
+      display: flex;
+      gap: 12px;
+    }
+    .score-dot {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 2px solid #DDDDDD;
+      background: #FFF;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      color: #BBBBBB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .score-dot:hover { border-color: #4573D2; color: #4573D2; }
+    .score-dot.selected { background: #4573D2; border-color: #4573D2; color: #FFF; }
+
+    /* ── Notes field ── */
+    .notes-section {
+      margin-top: 24px;
+    }
+    .notes-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 80px;
+      border: 1px solid #DDDDDD;
+      border-radius: 4px;
+      padding: 12px 14px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    textarea:focus { border-color: #4573D2; }
+    textarea::placeholder { color: #CCCCCC; }
+
+    /* ── Signal / checkbox row ── */
+    .signal-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .signal-btn {
+      flex: 1;
+      padding: 14px;
+      border: 2px solid #DDDDDD;
+      border-radius: 4px;
+      background: #FFF;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .signal-btn:hover { border-color: #4573D2; color: #4573D2; }
+    .signal-btn.selected-low    { background: #FEF3F3; border-color: #CE3F42; color: #CE3F42; }
+    .signal-btn.selected-medium { background: #FFF8E6; border-color: #C89200; color: #C89200; }
+    .signal-btn.selected-high   { background: #E6F4F0; border-color: #028465; color: #028465; }
+
+    /* ── Pricing cards ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 20px 0;
+    }
+    .price-card {
+      border: 1px solid #DDDDDD;
+      border-radius: 4px;
+      padding: 16px;
+      text-align: center;
+    }
+    .price-card .size  { font-size: 12px; color: #888; margin-bottom: 6px; }
+    .price-card .count { font-size: 13px; color: #555; margin-bottom: 10px; }
+    .price-card .price { font-size: 20px; font-weight: 700; color: #111; }
+    .price-card .unit  { font-size: 12px; color: #999; }
+
+    .alt-models {
+      display: flex;
+      gap: 14px;
+      margin-top: 4px;
+    }
+    .alt-card {
+      flex: 1;
+      border: 1px solid #DDDDDD;
+      border-radius: 4px;
+      padding: 14px 16px;
+      background: #F8F8F8;
+    }
+    .alt-card .alt-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+    .alt-card .alt-price { font-size: 16px; font-weight: 700; color: #111; }
+
+    /* ── Summary template ── */
+    .summary-template {
+      background: #F8F8F8;
+      border: 1px dashed #DDDDDD;
+      border-radius: 4px;
+      padding: 18px 20px;
+      font-size: 15px;
+      color: #444;
+      line-height: 1.7;
+      margin-top: 16px;
+    }
+    .summary-template span {
+      background: #EEF3FC;
+      color: #4573D2;
+      border-radius: 3px;
+      padding: 1px 6px;
+      font-weight: 600;
+    }
+
+    /* ── Sensitivity fields ── */
+    .sensitivity-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .sens-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .sens-row label {
+      font-size: 13px;
+      color: #555;
+      min-width: 260px;
+      line-height: 1.4;
+    }
+    .sens-row input[type="text"] {
+      flex: 1;
+      border: 1px solid #DDDDDD;
+      border-radius: 4px;
+      padding: 10px 12px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .sens-row input[type="text"]:focus { border-color: #4573D2; }
+    .sens-row input::placeholder { color: #CCCCCC; }
+
+    /* ── Navigation ── */
+    #nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .nav-btn {
+      padding: 10px 24px;
+      border-radius: 4px;
+      border: none;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    #btn-prev {
+      background: rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.6);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    #btn-prev:hover { background: rgba(255,255,255,0.18); color: #fff; }
+    #btn-next {
+      background: #4573D2;
+      color: #FFF;
+    }
+    #btn-next:hover { background: #3560BA; }
+    #btn-prev:disabled, #btn-next:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    /* ── Keyboard hint ── */
+    .key-hint {
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      margin-left: auto;
+    }
+    .key-hint kbd {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-family: Helvetica, Arial, sans-serif;
+    }
+
+    /* ── Divider ── */
+    hr.divider {
+      border: none;
+      border-top: 1px solid #EEEEEE;
+      margin: 24px 0;
+    }
+
+    /* ── Spacer ── */
+    .spacer { flex: 1; }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="slide-counter"></div>
+
+<div id="slides-container">
+
+  <!-- SLIDE 1: Titel -->
+  <div class="slide active">
+    <div class="tag tag-intro">Interviewguide</div>
+    <h1>Praksis<br>Value & Willingness to Pay</h1>
+    <p class="lead">Vi er ved at udvikle et opgavestyringssystem til revisorer og bogholderikontorer. I dag tester vi, hvad det er værd – og hvad I ville betale for det.</p>
+    <div class="spacer"></div>
+    <p style="font-size:13px; color:#AAAAAA;">e-conomic · Co-design interview · 2026</p>
+  </div>
+
+  <!-- SLIDE 2: Intro – sæt rammen -->
+  <div class="slide">
+    <div class="tag tag-intro">Intro</div>
+    <h2>Sæt rammen</h2>
+    <p class="lead">Det her er det første scope (MVP), vi overvejer at gå i markedet med. Nogle ting er klar fra start, andre kommer senere.</p>
+    <p style="font-size:14px; color:#888;">Jeg vil kort vise forskellen – og derefter vil jeg gerne høre jeres reaktion.</p>
+  </div>
+
+  <!-- SLIDE 3: MVP -->
+  <div class="slide">
+    <div class="tag tag-mvp">MVP · Fra start</div>
+    <h2>Det der er med fra start</h2>
+    <p class="subtitle">Fokus: struktur og overblik</p>
+    <div class="cols">
+      <div class="col-box">
+        <h3>Opgavestyring</h3>
+        <ul>
+          <li>Opgavetyper</li>
+          <li>Task Builder (opsætning af flows)</li>
+          <li>Gentagende opgaver</li>
+        </ul>
+      </div>
+      <div class="col-box">
+        <h3>Overblik</h3>
+        <ul>
+          <li>Checkliste-overblik</li>
+          <li>Kunde-/virksomhedsoverblik</li>
+          <li>Team-side</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:14px;">
+      <div class="col-box">
+        <h3>Data & setup</h3>
+        <ul>
+          <li>Kunde-data synkronisering</li>
+          <li>Bygget oven på eksisterende admin-setup</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Kommer senere -->
+  <div class="slide">
+    <div class="tag tag-later">Kommer senere</div>
+    <h2>Det, der kommer senere</h2>
+    <p class="subtitle">Fokus: effektivisering og automation</p>
+    <div class="cols">
+      <div class="col-box">
+        <h3>Effektivisering</h3>
+        <ul>
+          <li>Tidsregistrering</li>
+          <li>Notifikationer og reminders</li>
+          <li>Vedhæftninger og dokumenter</li>
+          <li>Fakturering?</li>
+        </ul>
+      </div>
+      <div class="col-box">
+        <h3>Automation & integration</h3>
+        <ul>
+          <li>SKAT-integration</li>
+          <li>Automation af fx momsdata</li>
+          <li>Integrationer til andre systemer</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:14px;">
+      <div class="col-box">
+        <h3>Avanceret styring</h3>
+        <ul>
+          <li>Ressourceplanlægning</li>
+          <li>Opgaveafhængigheder</li>
+          <li>Historik / audit logs</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Spørgsmål til scope -->
+  <div class="slide">
+    <div class="tag tag-scope">Scope · Vigtigt</div>
+    <h2>Spørgsmål til scope</h2>
+    <div class="questions">
+      <div class="question-item gold">Hvordan ville det her fungere for jer som start?</div>
+      <div class="question-item gold">Hvad mangler for, at det bliver rigtig værdifuldt?</div>
+      <div class="question-item gold">Hvad i "kommer senere" er mest kritisk for jer?</div>
+    </div>
+    <div class="notes-section" style="margin-top:24px;">
+      <div class="notes-label">Noter</div>
+      <textarea placeholder="Skriv noter her..."></textarea>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: 1. Problem / Pain -->
+  <div class="slide">
+    <div class="tag tag-pain">1 · Problem</div>
+    <h2>Problem (Pain) – Opgavestyring</h2>
+    <div class="questions">
+      <div class="question-item red">Oplever I det her som en udfordring i dag?</div>
+      <div class="question-item red">Hvornår går det galt?</div>
+    </div>
+    <div class="score-section">
+      <div class="score-label">Score (1 = ingen udfordring · 5 = stor udfordring)</div>
+      <div class="score-dots" id="score-pain">
+        <div class="score-dot" onclick="selectScore('score-pain',1)">1</div>
+        <div class="score-dot" onclick="selectScore('score-pain',2)">2</div>
+        <div class="score-dot" onclick="selectScore('score-pain',3)">3</div>
+        <div class="score-dot" onclick="selectScore('score-pain',4)">4</div>
+        <div class="score-dot" onclick="selectScore('score-pain',5)">5</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: 2. Tid / Impact -->
+  <div class="slide">
+    <div class="tag tag-pain">2 · Tid / Impact</div>
+    <h2>Tid &amp; Impact</h2>
+    <div class="questions">
+      <div class="question-item red">Hvor meget tid bruger I på det i dag – fx pr. uge eller pr. kunde?</div>
+      <div class="question-item red">Hvad er konsekvensen, hvis det ikke fungerer?</div>
+    </div>
+    <div class="notes-section">
+      <div class="notes-label">Noter</div>
+      <textarea placeholder="Tid pr. uge, konsekvenser, eksempler..."></textarea>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: 3. Value -->
+  <div class="slide">
+    <div class="tag tag-value">3 · Value</div>
+    <h2>Værdivurdering</h2>
+    <div class="questions">
+      <div class="question-item">Hvis I ikke havde et værktøj til det her – hvad ville konsekvensen være for jer?</div>
+      <div class="question-item">Ville I kunne undvære det?</div>
+      <div class="question-item">Hvad ville I gøre i stedet?</div>
+    </div>
+    <div class="score-section">
+      <div class="score-label">Score (1 = lav værdi · 5 = meget høj værdi)</div>
+      <div class="score-dots" id="score-value">
+        <div class="score-dot" onclick="selectScore('score-value',1)">1</div>
+        <div class="score-dot" onclick="selectScore('score-value',2)">2</div>
+        <div class="score-dot" onclick="selectScore('score-value',3)">3</div>
+        <div class="score-dot" onclick="selectScore('score-value',4)">4</div>
+        <div class="score-dot" onclick="selectScore('score-value',5)">5</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: WTP Step 1 -->
+  <div class="slide">
+    <div class="tag tag-wtp">4 · WTP · Step 1</div>
+    <h2>Willingness to Pay – åbent spørgsmål</h2>
+    <div class="questions">
+      <div class="question-item green">Hvad tænker I umiddelbart, at sådan et system burde koste?</div>
+    </div>
+    <div class="notes-section" style="margin-top:24px;">
+      <div class="notes-label">Umiddelbar reaktion</div>
+      <textarea placeholder="Kundens første prisangivelse eller reaktion..."></textarea>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: WTP Step 2 – prismodel -->
+  <div class="slide">
+    <div class="tag tag-wtp">4 · WTP · Step 2</div>
+    <h2>Test af prismodel</h2>
+    <p style="font-size:14px; color:#555; margin-bottom:16px;">Fast månedlig pris baseret på antal kunder:</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="size">Mindre kontor</div>
+        <div class="count">~25 kunder</div>
+        <div class="price">1.000 kr.</div>
+        <div class="unit">/md.</div>
+      </div>
+      <div class="price-card">
+        <div class="size">Mellemstort kontor</div>
+        <div class="count">~100 kunder</div>
+        <div class="price">1.750 kr.</div>
+        <div class="unit">/md.</div>
+      </div>
+      <div class="price-card">
+        <div class="size">Større kontor</div>
+        <div class="count">~500 kunder</div>
+        <div class="price">5.800 kr.</div>
+        <div class="unit">/md.</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#888; margin-bottom:10px;">Alternative modeller (pr. klient):</p>
+    <div class="alt-models">
+      <div class="alt-card">
+        <div class="alt-label">Model A</div>
+        <div class="alt-price">800 kr. + 10 kr./klient</div>
+      </div>
+      <div class="alt-card">
+        <div class="alt-label">Model B</div>
+        <div class="alt-price">1.000 kr. + 20 kr./klient</div>
+      </div>
+    </div>
+    <div class="questions" style="margin-top:16px;">
+      <div class="question-item green">Hvordan føles det for jer?</div>
+    </div>
+    <div class="notes-section">
+      <div class="notes-label">Reaktion</div>
+      <textarea placeholder="Reaktion på priserne – for dyrt, rimeligt, billigt?"></textarea>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: WTP Step 3 – prisfølsomhed -->
+  <div class="slide">
+    <div class="tag tag-wtp">4 · WTP · Step 3</div>
+    <h2>Prisfølsomhed</h2>
+    <div class="sensitivity-grid">
+      <div class="sens-row">
+        <label>Ved hvilken pris er det <strong>for dyrt?</strong></label>
+        <input type="text" placeholder="kr./md." />
+      </div>
+      <div class="sens-row">
+        <label>Ved hvilken pris tvivler I på <strong>kvaliteten?</strong></label>
+        <input type="text" placeholder="kr./md." />
+      </div>
+      <div class="sens-row">
+        <label>Ved hvilken pris er det et <strong>godt køb?</strong></label>
+        <input type="text" placeholder="kr./md." />
+      </div>
+    </div>
+    <hr class="divider" />
+    <div>
+      <div class="score-label" style="margin-bottom:10px;">Signal</div>
+      <div class="signal-row">
+        <button class="signal-btn" onclick="selectSignal(this,'selected-low')">Lav</button>
+        <button class="signal-btn" onclick="selectSignal(this,'selected-medium')">Medium</button>
+        <button class="signal-btn" onclick="selectSignal(this,'selected-high')">Høj</button>
+      </div>
+    </div>
+    <div class="questions" style="margin-top:18px;">
+      <div class="question-item green" style="font-size:14px;">Hvad skulle der til, for at det her gav mening at betale for? <em style="color:#888;">(hvis skeptisk)</em></div>
+    </div>
+    <div class="notes-section">
+      <div class="notes-label">Noter</div>
+      <textarea placeholder="Betingelser for køb, forbehold, krav..."></textarea>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: Samlet vurdering -->
+  <div class="slide">
+    <div class="tag tag-summary">Efter interview</div>
+    <h2>Samlet vurdering</h2>
+    <div class="score-label" style="margin: 16px 0 10px;">Samlet potentiale</div>
+    <div class="signal-row">
+      <button class="signal-btn" onclick="selectSignal(this,'selected-low')">Lav</button>
+      <button class="signal-btn" onclick="selectSignal(this,'selected-medium')">Medium</button>
+      <button class="signal-btn" onclick="selectSignal(this,'selected-high')">Høj</button>
+    </div>
+    <div class="notes-section" style="margin-top:20px;">
+      <div class="notes-label">Kort hvorfor</div>
+      <textarea placeholder="Opsummér vurderingen med 1–2 sætninger..."></textarea>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: Hurtig opsamling -->
+  <div class="slide">
+    <div class="tag tag-summary">Opsamling</div>
+    <h2>Hurtig opsamling (1 linje)</h2>
+    <p style="font-size:14px; color:#888; margin: 12px 0 8px;">Udfyld skabelonen nedenfor:</p>
+    <div class="summary-template">
+      <span>[Kunde]</span> oplever <span>[problem]</span>, bruger ca. <span>[tid]</span>, vurderer værdien som <span>[score]</span> og er <span>[villig / ikke villig]</span> til at betale.
+    </div>
+    <div class="notes-section" style="margin-top:20px;">
+      <div class="notes-label">Skriv opsamlingen her</div>
+      <textarea style="min-height:60px;" placeholder="fx: Kundekontor med 80 kunder oplever kaos i deadline-styring, bruger ~3t/uge, vurderer værdien som 4/5 og er villig til at betale op til 1.500 kr./md."></textarea>
+    </div>
+    <div class="spacer"></div>
+    <p style="font-size:13px; color:#AAAAAA; padding-top:20px; border-top:1px solid #EEE; margin-top:20px;">Tak for jeres tid 🙏</p>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<div id="nav">
+  <button class="nav-btn" id="btn-prev" onclick="changeSlide(-1)">← Tilbage</button>
+  <button class="nav-btn" id="btn-next" onclick="changeSlide(1)">Næste →</button>
+  <span class="key-hint"><kbd>←</kbd> <kbd>→</kbd> piletaster</span>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    document.getElementById('btn-prev').disabled = current === 0;
+    document.getElementById('btn-next').disabled = current === slides.length - 1;
+    document.getElementById('slide-counter').textContent = (current + 1) + ' / ' + slides.length;
+    const pct = ((current + 1) / slides.length * 100).toFixed(1);
+    document.getElementById('progress-bar').style.width = pct + '%';
+  }
+
+  function changeSlide(dir) { showSlide(current + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+  });
+
+  function selectScore(groupId, val) {
+    const dots = document.querySelectorAll('#' + groupId + ' .score-dot');
+    dots.forEach((d, i) => d.classList.toggle('selected', i + 1 === val));
+  }
+
+  function selectSignal(btn, cls) {
+    const row = btn.closest('.signal-row');
+    row.querySelectorAll('.signal-btn').forEach(b => {
+      b.classList.remove('selected-low','selected-medium','selected-high');
+    });
+    btn.classList.add(cls);
+  }
+
+  // Init
+  showSlide(0);
+</script>
+</body>
+</html>
