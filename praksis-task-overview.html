@@ -7674,13 +7674,19 @@
       types.map(tt => `<option value="${tt.name}">${tt.name}</option>`).join('');
   }
 
+  function trParseTime(str) {
+    const m = str.trim().match(/^(\d{1,2})[:.，,](\d{2})$/);
+    if (!m) return null;
+    const h = parseInt(m[1]), min = parseInt(m[2]);
+    if (h > 23 || min > 59) return null;
+    return h * 60 + min;
+  }
+
   function trAutoCalc() {
-    const start = document.getElementById('trStart').value;
-    const end   = document.getElementById('trEnd').value;
-    if (!start || !end) return;
-    const [sh, sm] = start.split(':').map(Number);
-    const [eh, em] = end.split(':').map(Number);
-    const totalMin = (eh * 60 + em) - (sh * 60 + sm);
+    const startMin = trParseTime(document.getElementById('trStart').value);
+    const endMin   = trParseTime(document.getElementById('trEnd').value);
+    if (startMin === null || endMin === null) return;
+    const totalMin = endMin - startMin;
     if (totalMin <= 0) return;
     document.getElementById('trMinutes').value = +(totalMin / 60).toFixed(2);
   }
@@ -8239,11 +8245,11 @@
       <div class="ct-row">
         <div class="ct-field">
           <label class="ct-label">Starttid</label>
-          <input type="time" id="trStart" class="ct-input" oninput="trAutoCalc()">
+          <input type="text" id="trStart" class="ct-input" placeholder="08:00" oninput="trAutoCalc()">
         </div>
         <div class="ct-field">
           <label class="ct-label">Sluttid</label>
-          <input type="time" id="trEnd" class="ct-input" oninput="trAutoCalc()">
+          <input type="text" id="trEnd" class="ct-input" placeholder="16:00" oninput="trAutoCalc()">
         </div>
       </div>
 
