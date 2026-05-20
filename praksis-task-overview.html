@@ -7645,13 +7645,6 @@
   }
 
   // ── Register Time Modal ──
-  const _trTasksByClient = {
-    'Novo Nordisk A/S': ['Årsregnskab 2025 – gennemgang', 'Bogføring april', 'Momsafregning Q1'],
-    'Mærsk A/S':        ['Lønkørsel maj', 'Bogføring april', 'Årsrapport – udkast'],
-    'Ørsted A/S':       ['Momsafregning Q1', 'Årsregnskab 2025'],
-    'DSB A/S':          ['Selskabsskat Q1', 'Bogføring marts'],
-  };
-
   function trOpen() {
     const overlay = document.getElementById('trOverlay');
     overlay.classList.add('open');
@@ -7661,12 +7654,12 @@
     const dd    = String(today.getDate()).padStart(2, '0');
     document.getElementById('trDate').value    = `${yyyy}-${mm}-${dd}`;
     document.getElementById('trClient').value  = '';
-    document.getElementById('trTask').innerHTML = '<option value="">Vælg opgave…</option>';
-    document.getElementById('trSubtask').value  = '';
-    document.getElementById('trStart').value    = '';
-    document.getElementById('trEnd').value      = '';
-    document.getElementById('trMinutes').value  = '';
+    document.getElementById('trSubtask').value = '';
+    document.getElementById('trStart').value   = '';
+    document.getElementById('trEnd').value     = '';
+    document.getElementById('trMinutes').value = '';
     document.getElementById('trError').textContent = '';
+    trPopulateTasks();
   }
 
   function trClose() {
@@ -7674,11 +7667,11 @@
   }
 
   function trPopulateTasks() {
-    const client = document.getElementById('trClient').value;
-    const sel    = document.getElementById('trTask');
-    const tasks  = _trTasksByClient[client] || [];
+    const sel   = document.getElementById('trTask');
+    const types = (typeof TASK_TYPES_DATA !== 'undefined' ? TASK_TYPES_DATA : [])
+      .filter(tt => tt.active);
     sel.innerHTML = '<option value="">Vælg opgave…</option>' +
-      tasks.map(tk => `<option value="${tk}">${tk}</option>`).join('');
+      types.map(tt => `<option value="${tt.name}">${tt.name}</option>`).join('');
   }
 
   function trAutoCalc() {
